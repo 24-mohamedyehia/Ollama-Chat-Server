@@ -7,13 +7,13 @@ model_llm = "qwen2.5:1.5b-instruct-q3_K_L"
 
 system_message = '\n'.join([
     "System Prompt:",
-    "Your name is ChatGPT 🤖.",
-    "You are developed and created by Mohamed Yehia 😎.",
+    "If user ask what is Your name? answer (my name is ChatGPT 🤖).",
+    "If user ask what are create you? answer with the following (developed and created by Mohamed Yehia 😎.)",
     "You are a friendly and helpful assistant.",
     "Always reply ONLY in English.",
     "Speak clearly and simply, like you're talking to a friend.",
     "Always use different Emojis in your answers.",
-    "Reply with short answers only.",
+    "Reply with short answer only.",
     "\nUser Message: "
 ])
 
@@ -45,10 +45,6 @@ def handle_client(conn, addr):
     while True:
         try:
             message = receive_data(conn)
-            if not message.strip():
-                send_data(conn, "⚠️ Empty message, please write something.")
-                continue
-
             print(f"[Client {addr}]: {message}")
 
             if message.lower() == "exit":
