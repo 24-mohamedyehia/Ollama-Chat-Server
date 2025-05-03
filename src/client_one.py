@@ -11,7 +11,7 @@ def receive_data(connection):
 
 if __name__ == '__main__':
     connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    connection.connect(('192.168.43.48', 12345))
+    connection.connect(('localhost', 12345))
 
     print("Type a message to send to server (type 'exit' to quit):")
     while True:
