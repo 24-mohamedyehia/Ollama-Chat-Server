@@ -2,6 +2,8 @@
 import socket
 import threading
 import requests
+import os
+import datetime
 
 model_llm = "qwen2.5:1.5b-instruct-q3_K_L"
 
@@ -31,10 +33,26 @@ def ask_ollama(prompt):
         return response.json()["response"]
     else:
         return "Error getting response from Ollama"
+    
+def log_chat(addr, user_msg=None, bot_response=None, event=None, error=None):
+    os.makedirs("logs", exist_ok=True)
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    log_filename = datetime.datetime.now().strftime("logs/chat_log_%Y-%m-%d.txt")
+
+    with open(log_filename, "a", encoding="utf-8") as log_file:
+        if event:
+            log_file.write(f"[{timestamp}] [{addr}] --- {event} ---\n")
+        elif error:
+            log_file.write(f"[{timestamp}] [ERROR] [{addr}] {error}\n")
+        elif user_msg and bot_response:
+            log_file.write(f"[{timestamp}] [{addr}] User: {user_msg}\n")
+            log_file.write(f"[{timestamp}] [{addr}] Bot: {bot_response}\n\n")
 
 
 def handle_client(conn, addr):
     print(f"[+] Connected to: {addr}")
+    log_chat(addr, event="Session started")
 
     def send_data(connection, message):
         connection.send(message.encode())
@@ -55,16 +73,21 @@ def handle_client(conn, addr):
             response = ask_ollama(message)
             print(f"[Response {addr}]: {response}")
             send_data(conn, response)
+            print("Logging chat...")
+            log_chat(addr, message, response)
 
         except Exception as e:
             print(f"[!] Error: {e}")
+            log_chat(addr, error=str(e))
             break
 
     conn.close()
+    print(f"[-] Disconnected from {addr}")
+    log_chat(addr, event="Session ended")
 
 def start_server():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(('192.168.27.48', 12345))
+    server_socket.bind(('localhost', 12345))
     server_socket.listen()
     print("[*] Server listening...")
 
