@@ -11,7 +11,7 @@ def receive_data(connection):
 
 if __name__ == '__main__':
     connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    connection.connect(('localhost', 12345))
+    connection.connect(('192.168.43.48', 12345))
 
     print("Type a message to send to server (type 'exit' to quit):")
     while True:
@@ -20,9 +20,10 @@ if __name__ == '__main__':
             print("⚠️ Please type a message before sending.")
             continue
         send_data(connection, msg)
-        if msg.lower() == "exit":
-            break
         response = receive_data(connection)
         print(f"{Fore.GREEN}ChatGPT:\n{response}{Style.RESET_ALL}")
+        if msg.lower() == "exit":
+            connection.close()
+            break
 
-    connection.close()
+    
