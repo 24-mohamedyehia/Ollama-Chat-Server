@@ -23,7 +23,7 @@ def ask_ollama(prompt):
     payload = {
         "model": model_llm,
         "prompt": system_message + prompt,
-        "stream": False
+        "stream": False 
     }
 
     response = requests.post(url, json=payload)
@@ -47,11 +47,13 @@ def handle_client(conn, addr):
             message = receive_data(conn)
             print(f"[Client {addr}]: {message}")
 
+
             if message.lower() == "exit":
-                send_data(conn, "👋 Goodbye!")
+                send_data(conn, "👋 Goodbye!") 
                 break
 
             response = ask_ollama(message)
+            print(f"[Response {addr}]: {response}")
             send_data(conn, response)
 
         except Exception as e:
@@ -62,7 +64,7 @@ def handle_client(conn, addr):
 
 def start_server():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(('localhost', 12345))
+    server_socket.bind(('192.168.27.48', 12345))
     server_socket.listen()
     print("[*] Server listening...")
 
@@ -73,3 +75,4 @@ def start_server():
 
 if __name__ == '__main__':
     start_server()
+
